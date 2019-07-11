@@ -1,0 +1,70 @@
+.result{
+  overflow: auto
+}
+
+.button{
+    margin-top: 5px;
+}
+
+.dragover{
+  background-color: #e6ee9c !important
+}
+
+textarea {
+  font-family: monospace;
+  font-size: 12px;
+  width: 100%;
+}
+
+.step{
+  padding:10px 20px;
+}
+
+.step.active{
+  background: #004e4626;
+  -webkit-animation: fadein2 0.3s; /* Safari, Chrome and Opera > 12.1 */
+  -moz-animation: fadein2 0.3s; /* Firefox < 16 */
+  -ms-animation: fadein2 0.3s; /* Internet Explorer */
+  -o-animation: fadein2 0.3s; /* Opera < 12.1 */
+  animation: fadein2 0.3s ease-out;
+}
+
+@keyframes fadein2 {
+  from {  background:#fff;}
+  to   {  background:#004e4626;}
+}
+
+.step:not(.active){
+  /*filter: grayscale(0.5) blur(1px)*/;
+  /*filter: opacity(0.5)*/
+}
+
+#files {
+  padding-left: 0px;
+  list-style-type: "🖹 ";
+  list-style-position: inside;
+  
+}
+
+.deleteButton{
+  color:red;
+  margin-left: 10px;
+}
+
+#opusResponse{
+  display: none;
+  font-family: monospace;
+  margin-top: 1rem;
+  background: #fff;
+}
+
+#opusResponse:before{
+  content: 'Serverantwort: '
+}
+
+footer a{
+  color: #80add6;
+}
+footer {
+  color: #80add6;
+}
