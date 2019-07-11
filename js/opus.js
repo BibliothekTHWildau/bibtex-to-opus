@@ -1,3 +1,11 @@
+/** 
+ * @version 0.1.0 
+ * @author Ampuero Morisaki, Sebastian, TH Wildau
+ * @author Kissig, Jan, TH Wildau
+ * @copyright 
+ * @license GNU General Public License v3.0
+ */
+
 const dropzoneHoverClassName = "dragover";
 let fileInput = document.getElementById('file');
 let bibtexArea = document.getElementById("bibtexInput");
