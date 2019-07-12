@@ -370,7 +370,7 @@ async function validateXML() {
   xmlAlert.className = "alert";
   xmlArea.onkeyup = xmlChange;
 
-  let data = await fetch("https://publister.th-wildau.de/bibliothek/opus/validator/validate.php", {
+  let data = await fetch("validator/validate.php", {
     method: 'POST',
     headers: {
       "Content-Type": "text/xml"
