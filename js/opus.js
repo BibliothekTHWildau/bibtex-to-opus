@@ -17,6 +17,7 @@ let downloadButton = document.getElementById('downloadButton');
 let bibtextAlert = document.getElementById('bibtextAlert');
 let xmlAlert = document.getElementById('xmlAlert');
 let filesList = document.getElementById('files');
+let fileInputError = document.getElementById('badFileAlert');
 
 // caching issues
 bibtexArea.value = "";
@@ -32,6 +33,7 @@ bibtexArea.addEventListener("dragenter", dragenter, false);
 bibtexArea.addEventListener("dragleave", dragleave, false);
 bibtexArea.addEventListener("dragover", dragover, false);
 bibtexArea.addEventListener("drop", drop, false);
+bibtexArea.addEventListener("change", function(e){ handleBibtextFile(e.target.value); }, false);
 validateXMLButton.onclick = validateXML;
 uploadButton.onclick = upload;
 downloadButton.onclick = download;
@@ -122,6 +124,9 @@ function handleBibtextFile(bibtex) {
     //handle errors
     showBibtexAlert(JSON.stringify(bibtexJSON.errors))
   }
+  
+  if (Object.keys(bibtexJSON.entries).length === 0)
+    return showBibtexAlert(JSON.stringify("Inhalt ist kein gültiges Bibtex"))
 
   // print raw bibtex to screen
   bibtexArea.value = bibtex;
@@ -198,7 +203,9 @@ function deleteFile(evt) {
  * dismiss filetypes other than .pdf and .bib
  * @returns {undefined} */
 function fileChange() {
-
+  fileInputError.style.display = 'none';
+  fileInputError.innerHTML = "";
+  
   for (let file of fileInput.files) {
     let reader = new FileReader();
     reader.onload = (evt) => {
@@ -226,7 +233,9 @@ function fileChange() {
       reader.readAsText(file);
     } else {
       // dismiss the file
-      console.log("ignoring file", file.name)
+      console.log("ignoring file", file.name);
+      fileInputError.style.display = 'block';
+      fileInputError.innerHTML += 'Ignoriere ' + file.name + "<br>";
     }
   }
 }
@@ -370,7 +379,7 @@ async function validateXML() {
   xmlAlert.className = "alert";
   xmlArea.onkeyup = xmlChange;
 
-  let data = await fetch("validator/validate.php", {
+  let data = await fetch("https://publister.th-wildau.de/bibliothek/opus/validator/validate.php", {
     method: 'POST',
     headers: {
       "Content-Type": "text/xml"
