@@ -28,9 +28,11 @@
                 <textarea class="rounded-2 " id="bibtexInput" rows="5" placeholder="Bibtex hier einfügen">
                 </textarea>
                 <div class="alert" id="bibtextAlert" style="display: none;"></div>
+                  
                 <ul class="" id="files"></ul>
                 <input style="display:none" accept=".bib, .pdf" class="" type="file" name="bibtexFile" id="file" multiple/>
-                <label for="file" class="center-align btn  btn-light">Datei auswählen oder hereinziehen</label><br>
+                <label for="file" class="center-align btn  btn-light">Datei auswählen oder hereinziehen</label> <br>
+                <div class="alert alert-warning" id="badFileAlert" style="display: none;"></div>             
               </div>
             </div>
           </section>
@@ -39,7 +41,7 @@
             <h4>Sprache setzen</h4>
             <div class="form-group">
               <select class="_custom-select" id="languageSelect" disabled="">
-                <option disabled value="" selected="">Bitte Sprache wählen</option>
+                <option selected=""></option>
                 <option value="eng">Englisch</option>
                 <option value="ger">Deutsch</option>
               </select>
