@@ -224,12 +224,16 @@ function fileChange() {
         case "application/pdf":
           handlePDFFile(file.name, evt.target.result);
           break;
+        default : 
+		      if ( file.name.indexOf(".bib") > -1 )
+			      handleBibtextFile(evt.target.result);
       }
     }
 
     if (file.type === "application/pdf") {
       reader.readAsArrayBuffer(file);
-    } else if (file.type === "text/x-bibtex") {
+    } else if (file.type === "text/x-bibtex" || file.name.indexOf(".bib") > -1) {	
+	  // file type not set in win firefox, we check for filename
       reader.readAsText(file);
     } else {
       // dismiss the file
