@@ -1,6 +1,9 @@
 # bibtex-to-opus
 Tool zum Import von Bibtex-Dateien in das Open Access Repository OPUS4 (http://www.opus-repository.org/) über die vorhandene Sword-Schnittstelle (v1.3)
 
+## Anforderungen
+* Webserver mit mind. php7 
+
 ## Features:
 * Import von Packages (*.bib und *.pdf in einem zip-Container)
 * Erzeugung von "opus.xml"
@@ -10,6 +13,7 @@ Tool zum Import von Bibtex-Dateien in das Open Access Repository OPUS4 (http://w
 ## Einstellungen: 
 * Im Verzeichnis `sword` die Datei `_settings.php` in `settings.php` umbenennen und mit den eigenen Einstellungen speichern.
 * Im Verzeichnis `validator` die Datei `_settings.php` in `settings.php` umbenennen und mit den eigenen Einstellungen speichern.
+* Im File js/opus.js publisherPlace und publisherName passend zur eigenen Institution setzen
 
 ## Folgende Projekte werden verwendet:
 * FileSaver.js - A saveAs() FileSaver implementation. 2014-01-24 By Eli Grey, http://eligrey.com
