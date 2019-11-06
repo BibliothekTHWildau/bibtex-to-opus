@@ -6,6 +6,10 @@
  * @license GNU General Public License v3.0
  */
 
+// change the following lines matching your institution, 
+let publisherName = "Technische Hochschule Wildau";
+let publisherPlace = "Hochschulring 1, 15745 Wildau"
+
 const dropzoneHoverClassName = "dragover";
 let fileInput = document.getElementById('file');
 let bibtexArea = document.getElementById("bibtexInput");
@@ -272,8 +276,8 @@ function processToXML() {
 
   let xml = module.builder.create("import", {encoding: 'UTF-8'}).
           ele("opusDocument", {
-            "publisherName": "Technische Hochschule Wildau",
-            "publisherPlace": "Hochschulring 1, 15745 Wildau",
+            "publisherName": publisherName,
+            "publisherPlace": publisherPlace,
             "serverState": "unpublished",
             "language": opusDocumentLanguage,
             "type": bibTexObj.bib_type,
