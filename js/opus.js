@@ -37,7 +37,7 @@ bibtexArea.addEventListener("dragenter", dragenter, false);
 bibtexArea.addEventListener("dragleave", dragleave, false);
 bibtexArea.addEventListener("dragover", dragover, false);
 bibtexArea.addEventListener("drop", drop, false);
-bibtexArea.addEventListener("change", function(e){ handleBibtextFile(e.target.value); }, false);
+bibtexArea.addEventListener("change", function (e) { handleBibtextFile(e.target.value); }, false);
 validateXMLButton.onclick = validateXML;
 uploadButton.onclick = upload;
 downloadButton.onclick = download;
@@ -116,8 +116,9 @@ function hideBibtexAlert() {
  * @returns {undefined}
  */
 function handleBibtextFile(bibtex) {
-  let parser = new BibLatexParser(bibtex, {processUnexpected: true, processUnknown: true});
+  let parser = new BibLatexParser(bibtex, { processUnexpected: true, processUnknown: true });
   bibtexJSON = parser.parse();
+  console.log(bibtexJSON);
   hideBibtexAlert();
 
   if (bibtexJSON.warnings.length > 0) {
@@ -128,7 +129,7 @@ function handleBibtextFile(bibtex) {
     //handle errors
     showBibtexAlert(JSON.stringify(bibtexJSON.errors))
   }
-  
+
   if (Object.keys(bibtexJSON.entries).length === 0)
     return showBibtexAlert(JSON.stringify("Inhalt ist kein gültiges Bibtex"))
 
@@ -209,7 +210,7 @@ function deleteFile(evt) {
 function fileChange() {
   fileInputError.style.display = 'none';
   fileInputError.innerHTML = "";
-  
+
   for (let file of fileInput.files) {
     let reader = new FileReader();
     reader.onload = (evt) => {
@@ -228,16 +229,16 @@ function fileChange() {
         case "application/pdf":
           handlePDFFile(file.name, evt.target.result);
           break;
-        default : 
-		      if ( file.name.indexOf(".bib") > -1 )
-			      handleBibtextFile(evt.target.result);
+        default:
+          if (file.name.indexOf(".bib") > -1)
+            handleBibtextFile(evt.target.result);
       }
     }
 
     if (file.type === "application/pdf") {
       reader.readAsArrayBuffer(file);
-    } else if (file.type === "text/x-bibtex" || file.name.indexOf(".bib") > -1) {	
-	  // file type not set in win firefox, we check for filename
+    } else if (file.type === "text/x-bibtex" || file.name.indexOf(".bib") > -1) {
+      // file type not set in win firefox, we check for filename
       reader.readAsText(file);
     } else {
       // dismiss the file
@@ -272,107 +273,114 @@ function processToXML() {
   if (languageSelect.selectedIndex === 0)
     return goto(2);
 
-  let bibTexObj = bibtexJSON.entries["1"];
+  let bibtexEntries = Object.keys(bibtexJSON.entries);
+  let entry;
+  let root = module.builder.create("import", { encoding: 'UTF-8' });
+  let xmlNode;
 
-  let xml = module.builder.create("import", {encoding: 'UTF-8'}).
-          ele("opusDocument", {
-            "publisherName": publisherName,
-            "publisherPlace": publisherPlace,
-            "serverState": "unpublished",
-            "language": opusDocumentLanguage,
-            "type": bibTexObj.bib_type,
-            "oldId": bibTexObj.entry_key,
-            "pageLast": (bibTexObj.fields.pages) ? (bibTexObj.fields.pages[0][1]) ? bibTexObj.fields.pages[0][1]["0"].text : "" : "",
-            "pageFirst": (bibTexObj.fields.pages) ? bibTexObj.fields.pages[0][0]["0"].text : "",
-            "edition": (bibTexObj.fields.edition) ? bibTexObj.fields.edition[0].text : "",
-            "volume": (bibTexObj.fields.volume) ? bibTexObj.fields.volume[0].text : "",
-            "issue": (bibTexObj.fields.issue) ? bibTexObj.fields.issue[0].text : "",
-            "creatingCorporation": (bibTexObj.fields.corporation) ? bibTexObj.fields.corporation[0].text : "",
-            "contributingCorporation": (bibTexObj.fields.contributing_corporation) ? bibTexObj.fields.contributing_corporation[0].text : "",
-            "belongsToBibliography": (bibTexObj.fields.bibliography) ? bibTexObj.fields.bibliography[0].text : "false"
-          }).ele("titlesMain");
-  for (let title in bibTexObj.fields.title) {
-    xml.ele("titleMain", {
-      "language": opusDocumentLanguage
-    }, bibTexObj.fields.title[title].text).up();
-  }
-  xml = xml.up();
-  if (bibTexObj.fields.journaltitle) {
-    xml = xml.ele("titles");
-    for (let title in bibTexObj.fields.journaltitle) {
-      xml.ele("title", {"type": "parent", "language": opusDocumentLanguage}, bibTexObj.fields.journaltitle[title].text).up();
-    }
-    xml = xml.up();
-  }
-  if (bibTexObj.fields.abstract) {
-    xml = xml.ele("abstracts");
-    for (let abstract in bibTexObj.fields.abstract) {
-      xml.ele("abstract", {"language": opusDocumentLanguage}, bibTexObj.fields.abstract[abstract].text).up();
-    }
-    xml = xml.up();
-  }
-  xml = xml.ele("persons");
-  for (let person in bibTexObj.fields.author) {
-    xml = xml.ele("person", {
-      "role": "author",
-      "firstName": bibTexObj.fields.author[person].given[0].text,
-      "lastName": bibTexObj.fields.author[person].family[0].text
-    }).up();
-  }
-  xml = xml.up();
-  if (bibTexObj.fields.keywords) {
-    xml = xml.ele("keywords");
-    for (let keyword in bibTexObj.fields.keywords) {
-      xml = xml.ele("keyword", {
-        "type": "swd",
+  bibtexEntries.forEach(function (value, index) {
+    entry = bibtexJSON.entries[value];
+    console.log(entry);
+    xmlNode = root.ele("opusDocument", {
+      "publisherName": publisherName,
+      "publisherPlace": publisherPlace,
+      "serverState": "unpublished",
+      "language": opusDocumentLanguage,
+      "type": entry.bib_type,
+      "oldId": entry.entry_key,
+      "pageLast": (entry.fields.pages) ? (entry.fields.pages[0][1]) ? entry.fields.pages[0][1]["0"].text : "" : "",
+      "pageFirst": (entry.fields.pages) ? entry.fields.pages[0][0]["0"].text : "",
+      "edition": (entry.fields.edition) ? entry.fields.edition[0].text : "",
+      "volume": (entry.fields.volume) ? entry.fields.volume[0].text : "",
+      "issue": (entry.fields.issue) ? entry.fields.issue[0].text : "",
+      "creatingCorporation": (entry.fields.corporation) ? entry.fields.corporation[0].text : "",
+      "contributingCorporation": (entry.fields.contributing_corporation) ? entry.fields.contributing_corporation[0].text : "",
+      "belongsToBibliography": (entry.fields.bibliography) ? entry.fields.bibliography[0].text : "false"
+    }).ele("titlesMain");
+    for (let index in entry.fields.title) {
+      xmlNode.ele("titleMain", {
         "language": opusDocumentLanguage
-      }, bibTexObj.fields.keywords[keyword]).up();
+      }, entry.fields.title[index].text).up();
     }
-    xml = xml.up();
-  }
-  if (bibTexObj.fields.date) {
-    let dateObj = {"type": "completed", "year": bibTexObj.fields.date.substring(0, 4)};
-    if (bibTexObj.unknown_fields) {
-      if (bibTexObj.unknown_fields.day)
-        dateObj["monthDay"] = "--" + bibTexObj.fields.date.substring(5) + "-" + bibTexObj.unknown_fields.day[0].text;
+    xmlNode = xmlNode.up();
+    if (entry.fields.journaltitle) {
+      xmlNode = xmlNode.ele("titles");
+      for (let index in entry.fields.journaltitle) {
+        xmlNode.ele("title", { "type": "parent", "language": opusDocumentLanguage }, entry.fields.journaltitle[index].text).up();
+      }
+      xmlNode = xmlNode.up();
     }
-    xml = xml.ele("dates")
-            .ele("date", dateObj).up();
-    xml = xml.up();
-  }
-
-  if (bibTexObj.fields.doi || bibTexObj.fields.issn) {
-    xml = xml.ele("identifiers");
-    if (bibTexObj.fields.doi)
-      xml = xml.ele("identifier", {"type": "doi"}, bibTexObj.fields.doi).up();
-    if (bibTexObj.fields.issn)
-      xml = xml.ele("identifier", {"type": "issn"}, bibTexObj.fields.issn[0].text).up();
-    xml = xml.up();
-  }
-
-  if (uploadFiles.length > 0) {
-    xml = xml.ele("files", {"basedir": "."});
-
-    for (let f of uploadFiles) {
-      xml = xml.ele("file", {"language": opusDocumentLanguage, "name": f.fileName, "visibleInOai": "true"});
-      xml = xml.ele("checksum", {"type": "md5"}, f.md5).up();
-      xml = xml.ele("comment", "").up();
-      xml = xml.up();
+    if (entry.fields.abstract) {
+      xmlNode = xmlNode.ele("abstracts");
+      for (let index in entry.fields.abstract) {
+        xmlNode.ele("abstract", { "language": opusDocumentLanguage }, entry.fields.abstract[index].text).up();
+      }
+      xmlNode = xmlNode.up();
+    }
+    xmlNode = xmlNode.ele("persons");
+    for (let index in entry.fields.author) {
+      xmlNode = xmlNode.ele("person", {
+        "role": "author",
+        "firstName": entry.fields.author[index].given[0].text,
+        "lastName": entry.fields.author[index].family[0].text
+      }).up();
+    }
+    xmlNode = xmlNode.up();
+    if (entry.fields.keywords) {
+      xmlNode = xmlNode.ele("keywords");
+      for (let index in entry.fields.keywords) {
+        xmlNode = xmlNode.ele("keyword", {
+          "type": "swd",
+          "language": opusDocumentLanguage
+        }, entry.fields.keywords[index]).up();
+      }
+      xmlNode = xmlNode.up();
+    }
+    if (entry.fields.date) {
+      let dateObj = { "type": "completed", "year": entry.fields.date.substring(0, 4) };
+      if (entry.unknown_fields) {
+        if (entry.unknown_fields.day)
+          dateObj["monthDay"] = "--" + entry.fields.date.substring(5) + "-" + entry.unknown_fields.day[0].text;
+      }
+      xmlNode = xmlNode.ele("dates")
+        .ele("date", dateObj).up();
+      xmlNode = xmlNode.up();
     }
 
-  }
+    if (entry.fields.doi || entry.fields.issn) {
+      xmlNode = xmlNode.ele("identifiers");
+      if (entry.fields.doi)
+        xmlNode = xmlNode.ele("identifier", { "type": "doi" }, entry.fields.doi).up();
+      if (entry.fields.issn)
+        xmlNode = xmlNode.ele("identifier", { "type": "issn" }, entry.fields.issn[0].text).up();
+      xmlNode = xmlNode.up();
+    }
 
+    if (uploadFiles.length > 0) {
+      xmlNode = xmlNode.ele("files", { "basedir": "." });
+
+      for (let f of uploadFiles) {
+        xmlNode = xmlNode.ele("file", { "language": opusDocumentLanguage, "name": f.fileName, "visibleInOai": "true" });
+        xmlNode = xmlNode.ele("checksum", { "type": "md5" }, f.md5).up();
+        xmlNode = xmlNode.ele("comment", "").up();
+        xmlNode = xmlNode.up();
+      }
+
+    }
+  });
   // print xml 
-  xmlArea.value = xml.end({pretty: true,
+  xmlArea.value = root.end({
+    pretty: true,
     indent: ' ',
     newline: '\n',
     width: 0,
     allowEmpty: false,
-    spacebeforeslash: ''});
+    spacebeforeslash: ''
+  });
   xmlArea.rows = xmlArea.value.split("\n").length;
-
   // and validate
   validateXML();
+
 }
 
 /**
@@ -455,41 +463,41 @@ function download() {
 
   let zip = generateZip();
 
-  zip.generateAsync({type: "blob"})
-          .then(function (content) {
-            // see FileSaver.js
-            return saveAs(content, "example.zip");
-          });
+  zip.generateAsync({ type: "blob" })
+    .then(function (content) {
+      // see FileSaver.js
+      return saveAs(content, "example.zip");
+    });
 }
 
 /**
  * upload the zip file to swordappclient 
  * @returns {undefined} */
 function upload() {
-  
+
   uploadButton.disabled = true;
 
   var formData = new FormData();
 
   let zip = generateZip();
 
-  zip.generateAsync({type: "blob"})
-          .then(function (content) {
+  zip.generateAsync({ type: "blob" })
+    .then(function (content) {
 
-            formData.append('file', content, "opus.zip");
-            return fetch("sword/test-swordappclient.php", {
-              method: 'POST',
-              body: formData
-            });
+      formData.append('file', content, "opus.zip");
+      return fetch("sword/test-swordappclient.php", {
+        method: 'POST',
+        body: formData
+      });
 
-          })
-          .then(response => response.text())
-          .catch(error => console.error('Error:', error))
-          .then(response => {
-            opusResponse.innerHTML = response;
-            opusResponse.style.display = 'block';
-            console.log('Success:', response)
-  });
+    })
+    .then(response => response.text())
+    .catch(error => console.error('Error:', error))
+    .then(response => {
+      opusResponse.innerHTML = response;
+      opusResponse.style.display = 'block';
+      console.log('Success:', response)
+    });
 }
 
 let opusResponse = document.getElementById('opusResponse')
