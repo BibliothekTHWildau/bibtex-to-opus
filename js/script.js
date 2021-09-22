@@ -147,7 +147,7 @@ function processToXML(obj) {
         xml = xml.ele("keywords");
         for (let keyword in bibTexObj.fields.keywords) {
             xml = xml.ele("keyword", {
-                "type": "swd",
+                "type": "uncontrolled",
                 "language": language
             }, bibTexObj.fields.keywords[keyword]).up();
         }
